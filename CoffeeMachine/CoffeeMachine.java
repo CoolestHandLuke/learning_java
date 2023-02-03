@@ -6,18 +6,21 @@ public class CoffeeMachine {
         // Machine starting variables
         Scanner scanner = new Scanner(System.in);
         int[] moneyWaterMilkBeansCups = new int[] {550, 400, 540, 120, 9};
-
-        // Print state
-        printState(moneyWaterMilkBeansCups);
+        boolean usingMachine = true;
 
         // Get and process input
-        System.out.println("Write action (buy, fill, take):");
+        do {
+        System.out.println("Write action (buy, fill, take, remaining, exit):");
         String selection = scanner.next();
         switch (selection) {
             case "buy":
-                System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
-                int drinkChoice = scanner.nextInt();
-                makeCoffee(moneyWaterMilkBeansCups, drinkChoice);
+                System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back - to main menu:");
+                String drinkChoice = scanner.next();
+                if (drinkChoice.equalsIgnoreCase("back")) {
+                    break;
+                } else {
+                    makeCoffee(moneyWaterMilkBeansCups, Integer.parseInt(drinkChoice));
+                }
                 break;
             case "fill":
                 fillMachine(moneyWaterMilkBeansCups);
@@ -26,18 +29,25 @@ public class CoffeeMachine {
                 System.out.printf("I gave you $%d\n", moneyWaterMilkBeansCups[0]);
                 moneyWaterMilkBeansCups[0] = 0;
                 break;
+            case "remaining":
+                printState(moneyWaterMilkBeansCups);
+                break;
+            case "exit":
+                usingMachine = false;
+                break;
             default:
                 System.out.println("Invalid choice");
                 break;
         }
-        // Print updated state
-        System.out.println();
-        printState(moneyWaterMilkBeansCups);
+        } while (usingMachine == true);
+        
+        
         scanner.close();
 
     }
 
     public static void printState(int[] machineContents) {
+        System.out.println();
         System.out.println("The coffee machine has:");
         System.out.printf("%d ml of water\n", machineContents[1]);
         System.out.printf("%d ml of milk\n", machineContents[2]);
@@ -48,47 +58,80 @@ public class CoffeeMachine {
 
     public static void makeCoffee(int[] machineContents, int drinkChoice) {
         // moneyWaterMilkBeansCups
-        System.out.println();
-        if (drinkChoice == 1) { // Espresso
-            machineContents[1] -= 250;
-            machineContents[3] -= 16;
-            machineContents[0] += 4;
-            machineContents[4]--;
-        } else if (drinkChoice == 2) { // Latte
-            machineContents[1] -= 350;
-            machineContents[2] -= 75;
-            machineContents[3] -= 20;
-            machineContents[0] += 7;
-            machineContents[4]--;
-        } else if (drinkChoice == 3) { // Cappuccino
-            machineContents[1] -= 200;
-            machineContents[2] -= 100;
-            machineContents[3] -= 12;
-            machineContents[0] += 6;
-            machineContents[4]--;
-        } else { // An invalid selection
-            System.out.println("Invalid selection");
+        if (enoughResources(machineContents, drinkChoice)) {
+            System.out.println("I have enough resources, making you a coffee!\n");
+            if (drinkChoice == 1) { // Espresso
+                machineContents[1] -= 250;
+                machineContents[3] -= 16;
+                machineContents[0] += 4;
+                machineContents[4]--;
+            } else if (drinkChoice == 2) { // Latte
+                machineContents[1] -= 350;
+                machineContents[2] -= 75;
+                machineContents[3] -= 20;
+                machineContents[0] += 7;
+                machineContents[4]--;
+            } else if (drinkChoice == 3) { // Cappuccino
+                machineContents[1] -= 200;
+                machineContents[2] -= 100;
+                machineContents[3] -= 12;
+                machineContents[0] += 6;
+                machineContents[4]--;
+            } else { // An invalid selection
+                System.out.println("Invalid selection");
+            }
         }
     }
-    public static void howMuchCoffee(int mlWater, int mlMilk, int gCoffeeBeans, int cupsRequested) {
-        int mlWaterPerCup = 200;
-        int mlMilkPerCup = 50;
-        int gCoffeeBeansPerCup = 15;
-        int cupsPossible = 0;
-        int extraCupsPossible = 0;
-        
-        // Most cups we can make will be limited by our smallest quantity ingredient, so look for the min value, ignoring decimals
-        cupsPossible = Math.min(mlWater / mlWaterPerCup, mlMilk / mlMilkPerCup);
-        cupsPossible = Math.min(cupsPossible, gCoffeeBeans / gCoffeeBeansPerCup);
-        extraCupsPossible = cupsPossible - cupsRequested; // Possibly negative
 
-        // Check to see what's possible
-        if (extraCupsPossible > 0) {
-            System.out.printf("Yes, I can make that amount of coffee (and even %d more than that)\n", extraCupsPossible);
-        } else if (cupsPossible == cupsRequested) {
-            System.out.println("Yes, I can make that amount of coffee");
-        } else {
-            System.out.printf("No, I can only make %d cup(s) of coffee\n", cupsPossible);
+    public static boolean enoughResources(int[] machineContents, int drinkChoice) {
+        if (drinkChoice == 1) { // Espresso
+            if (machineContents[1] < 250) {
+                System.out.println("Sorry, not enough water!\n");
+                return false;
+            } else if (machineContents[3] < 16) {
+                System.out.println("Sorry, not enough coffee beans!\n");
+                return false;
+            } else if (machineContents[4] == 0) {
+                System.out.println("Sorry, no cups left!\n");
+                return false;
+            } else {
+                return true;
+            }
+        } else if (drinkChoice == 2) { // Latte
+            if (machineContents[1] < 350) {
+                System.out.println("Sorry, not enough water!\n");
+                return false;
+            } else if (machineContents[2] < 75) {
+                System.out.println("Sorry, not enough milk!\n");
+                return false;
+            } else if (machineContents[3] < 20) {
+                System.out.println("Sorry, not enough coffee beans!\n");
+                return false;
+            } else if (machineContents[4] == 0) {
+                System.out.println("Sorry, no cups left!\n");
+                return false;
+            } else {
+                return true;
+            }
+        } else if (drinkChoice == 3) { // Cappuccino
+            if (machineContents[1] < 200) {
+                System.out.println("Sorry, not enough water!\n");
+                return false;
+            } else if (machineContents[2] < 100) {
+                System.out.println("Sorry, not enough milk!\n");
+                return false;
+            } else if (machineContents[3] < 12) {
+                System.out.println("Sorry, not enough coffee beans!\n");
+                return false;
+            } else if (machineContents[4] == 0) {
+                System.out.println("Sorry, no cups left!\n");
+                return false;
+            } else {
+                return true;
+            }
+        } else { // An invalid choice
+            System.out.println("Invalid choice\n");
+            return false;
         }
     }
     public static void makeCoffee() {
@@ -112,7 +155,7 @@ public class CoffeeMachine {
         machineContents[3] += fill.nextInt();
         System.out.println("Write how many disposable cups you want to add:");
         machineContents[4] += fill.nextInt();
-        fill.close();
+        System.out.println();
     }
     public static void coffeeRequirements() {
         Scanner scanner = new Scanner(System.in);
