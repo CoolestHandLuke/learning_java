@@ -38,9 +38,8 @@ public class CoffeeMachine {
             default:
                 System.out.println("Invalid choice");
                 break;
-        }
+            }
         } while (usingMachine == true);
-        
         
         scanner.close();
 
