@@ -1,3 +1,11 @@
+/* Another project learning how to write in Java. This one models a coffee machine, it presents a menu to the user to select an option
+ * of either buying a coffee, filling the machine, cleaning out the machines money stash, or simply presenting the remaining supplies 
+ * in the machine. Typing "exit" allows them to quit the machine. 
+ * Writing this program helped to give me a better understanding of control flow and decomposing projects down in to smaller pieces.
+ * It also forced me to try to think/plan ahead to better factor my code for future iterations and design improvements. 
+ * Time willing, I may refactor this code in to a GUI and make it even more interactive, just as an exercise. We shall see!
+ * Luke Shea, 2/4/2023
+ */
 package CoffeeMachine;
 import java.util.*;
 
