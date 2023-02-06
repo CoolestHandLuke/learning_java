@@ -10,7 +10,8 @@ public class AmazingNumber {
     private boolean isBuzz;
     private boolean isDuck;
     private boolean isPalindromic;
-    public boolean isGapful;
+    private boolean isGapful;
+    private boolean isSpy;
 
     AmazingNumber(long value) {
         this.value = value;
@@ -23,6 +24,7 @@ public class AmazingNumber {
         System.out.println("- enter two natural numbers to obtain the properties of the list:");
         System.out.println("\t* the first parameter represents a starting number");
         System.out.println("\t* the second parameter shows how many consecutive numbers are to be processed");
+        System.out.println("- two natural numbers and a property to search for");
         System.out.println("- seperate the parameters with one space");
         System.out.println("- enter 0 to exit.");
 
@@ -104,6 +106,45 @@ public class AmazingNumber {
         }
     }   
     
+    public void setSpy() {
+
+        long temp = this.value;
+        long sumOfDigits = 0;
+        long productOfDigits = 1;
+        while (temp > 0) {
+            productOfDigits *= temp % 10;
+            sumOfDigits += temp % 10;
+            temp /= 10;
+        }
+        if (sumOfDigits == productOfDigits) {
+            this.isSpy = true;
+        } else {
+            this.isSpy = false;
+        }
+
+    }
+
+    public boolean isFilter(String filter) {
+
+        switch (filter) {
+            case "buzz": 
+                return this.isBuzz;
+            case "duck":
+                return this.isDuck;
+            case "palindromic":
+                return this.isPalindromic;
+            case "gapful":
+                return this.isGapful;
+            case "spy":
+                return this.isSpy;
+            case "even":
+                return this.isEven;
+            case "odd":
+                return this.isOdd;
+            default:
+                return false;
+        }
+    }
     public void printSingleProperties() {
         
         System.out.printf("Properties of %,d\n", this.value);
@@ -111,6 +152,7 @@ public class AmazingNumber {
         System.out.printf("\tduck: %b\n", this.isDuck);
         System.out.printf(" palindromic: %b\n", this.isPalindromic);
         System.out.printf("      gapful: %b\n", this.isGapful);
+        System.out.printf("\t spy: %b\n", this.isSpy);
         System.out.printf("\teven: %b\n", this.isEven);
         System.out.printf("\t odd: %b\n", this.isOdd);
        
@@ -118,27 +160,31 @@ public class AmazingNumber {
 
     public void printListProperties() {
 
-        String properties = "is ";
+        StringBuilder properties = new StringBuilder("is ");
+
         if (this.isBuzz) {
-            properties = properties.concat("buzz, ");
+            properties.append("buzz, ");
         }
         if (this.isDuck) {
-            properties = properties.concat("duck, ");
+            properties.append("duck, ");
         }
         if (this.isPalindromic) {
-            properties = properties.concat("palindromic, ");
+            properties.append("palindromic, ");
         }
         if (this.isGapful) {
-            properties = properties.concat("gapful, ");
+            properties.append("gapful, ");
+        }
+        if (this.isSpy) {
+            properties.append("spy, ");
         }
         if (this.isEven) {
-            properties = properties.concat("even");
+            properties.append("even");
         }
         if (this.isOdd) {
-            properties = properties.concat("odd");
+            properties.append("odd");
         }
 
-        System.out.printf("%,d " + properties + "\n", this.value);
+        System.out.printf("%,d " + properties.toString() + "\n", this.value);
     }
     public void setProperties() {
 
@@ -147,6 +193,7 @@ public class AmazingNumber {
         this.setDuck();
         this.setPalindromic();
         this.setGapful();
+        this.setSpy();
 
     }
 
@@ -157,14 +204,14 @@ public class AmazingNumber {
         printInstructions();
         while (true) {
             System.out.print("\nEnter a request: ");
-            String[] request = (scanner.nextLine()).split(" ");
+            String[] request = (scanner.nextLine().strip()).split(" ");
             System.out.println();
             if (request[0].equals("")) {
 
                 printInstructions();
 
             } else if (request.length == 1) {
-
+                
                 AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]));
                 if (amazingNum.value == 0) {
                     System.out.println("Goodbye!");
@@ -177,7 +224,7 @@ public class AmazingNumber {
                     amazingNum.printSingleProperties();
                 }
 
-            } else {
+            } else if (request.length == 2) {
                 if (Long.parseLong(request[0]) < 0) {
 
                     System.out.println("The first parameter should be a natural number or zero.");
@@ -196,6 +243,32 @@ public class AmazingNumber {
                         amazingNum.printListProperties();
 
                     }
+                }
+            } else {
+                StringBuilder filter = new StringBuilder();
+                String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "even", "odd"};
+                for (int i = 0; i < properties.length; i++) {
+                    if (request[2].equalsIgnoreCase(properties[i])) {
+                        filter.append(properties[i]);
+                        break;
+                    }
+                }
+                if (filter.toString().equals("")) {
+                    System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
+                    System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD]");
+                } else {
+                    int counter = 0;
+                    int i = 0;
+                    while (counter < Long.parseLong(request[1])) {
+                        AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
+                        amazingNum.setProperties();
+                        if (amazingNum.isFilter(filter.toString())) {
+                            amazingNum.printListProperties();
+                            counter++;
+                        }
+                        i++;
+                    }
+
                 }
             }
         }
