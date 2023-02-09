@@ -12,11 +12,12 @@ public class AmazingNumber {
     private boolean isPalindromic;
     private boolean isGapful;
     private boolean isSpy;
+    private boolean isSquare;
+    private boolean isSunny;
 
     AmazingNumber(long value) {
         this.value = value;
     }
-
     public static void printInstructions() {
 
         System.out.println("Supported requests:");
@@ -25,18 +26,17 @@ public class AmazingNumber {
         System.out.println("\t* the first parameter represents a starting number");
         System.out.println("\t* the second parameter shows how many consecutive numbers are to be processed");
         System.out.println("- two natural numbers and a property to search for");
+        System.out.println("- two natural numbers and two properties to search for");
         System.out.println("- seperate the parameters with one space");
         System.out.println("- enter 0 to exit.");
 
     }
-
     public boolean isNatural() {
         if (this.value <= 0) {
             return  false;
         }
         return true;
     }
-
     public void parity() {
         if (this.value % 2 == 0) {
             this.isEven = true;
@@ -46,7 +46,6 @@ public class AmazingNumber {
             this.isEven = false;
         }
     }
-
     public void setBuzz() {
         
         boolean endsWith7 = this.value % 10 == 7 ? true : false;
@@ -58,7 +57,6 @@ public class AmazingNumber {
         }
 
     }
-
     public void setDuck() {
         long temp = this.value;
         this.isDuck = false;
@@ -71,7 +69,6 @@ public class AmazingNumber {
             }
         }
     }
-
     public void setPalindromic() {
 
         long temp = this.value;
@@ -87,7 +84,6 @@ public class AmazingNumber {
             this.isPalindromic = false;
         }
     }
-
     public void setGapful() {
 
         String temp = String.valueOf(this.value);
@@ -105,7 +101,6 @@ public class AmazingNumber {
             }
         }
     }   
-    
     public void setSpy() {
 
         long temp = this.value;
@@ -123,7 +118,16 @@ public class AmazingNumber {
         }
 
     }
-
+    public void setSquareAndSunny() {
+        this.isSquare = false;
+        this.isSunny = false;
+        if (Math.sqrt(this.value) == (int)Math.sqrt(this.value)) {
+            this.isSquare = true;
+        }
+        if (Math.sqrt(this.value + 1) == (int)Math.sqrt(this.value + 1)) {
+            this.isSunny = true;
+        }
+    }
     public boolean isFilter(String filter) {
 
         switch (filter) {
@@ -137,6 +141,10 @@ public class AmazingNumber {
                 return this.isGapful;
             case "spy":
                 return this.isSpy;
+            case "square":
+                return this.isSquare;
+            case "sunny":
+                return this.isSunny;
             case "even":
                 return this.isEven;
             case "odd":
@@ -153,11 +161,12 @@ public class AmazingNumber {
         System.out.printf(" palindromic: %b\n", this.isPalindromic);
         System.out.printf("      gapful: %b\n", this.isGapful);
         System.out.printf("\t spy: %b\n", this.isSpy);
+        System.out.printf("      square: %b\n", this.isSquare);
+        System.out.printf("       sunny: %b\n", this.isSunny);
         System.out.printf("\teven: %b\n", this.isEven);
         System.out.printf("\t odd: %b\n", this.isOdd);
        
     }
-
     public void printListProperties() {
 
         StringBuilder properties = new StringBuilder("is ");
@@ -177,6 +186,12 @@ public class AmazingNumber {
         if (this.isSpy) {
             properties.append("spy, ");
         }
+        if (this.isSquare) {
+            properties.append("square, ");
+        }
+        if (this.isSunny) {
+            properties.append("sunny, ");
+        }
         if (this.isEven) {
             properties.append("even");
         }
@@ -194,9 +209,203 @@ public class AmazingNumber {
         this.setPalindromic();
         this.setGapful();
         this.setSpy();
+        this.setSquareAndSunny();
 
     }
+    public static void oneArgProperties(String[] request) {
+        try {
+            Long.parseLong(request[0]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The first parameter should be a natural number or zero.");
+            return;
+        }
+        AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]));
+        if (!amazingNum.isNatural()) {
+            System.out.println("The first parameter should be a natural number or zero.");
+        } else {
+            amazingNum.setProperties();
+            amazingNum.printSingleProperties();
+        }
+    }
 
+    public static void twoArgProperties(String[] request) {
+        try {
+            Long.parseLong(request[0]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The first parameter should be a natural number or zero.");
+            return;
+        }
+        try {
+            Long.parseLong(request[1]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The second parameter should be a natural number.");
+            return;
+        }
+        if (Long.parseLong(request[0]) < 0) {
+
+            System.out.println("The first parameter should be a natural number or zero.");
+
+        }
+        else if (Long.parseLong(request[1]) <= 0) {
+
+            System.out.println("The second parameter should be a natural number.");
+
+        } else {
+        
+            for (int i = 0; i < Long.parseLong(request[1]); i++) {
+
+                AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
+                amazingNum.setProperties();
+                amazingNum.printListProperties();
+
+            }
+        }
+    }
+
+    public static void threeArgProperties(String[] request) {
+        try {
+            Long.parseLong(request[0]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The first parameter should be a natural number or zero.");
+            return;
+        }
+        try {
+            Long.parseLong(request[1]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The second parameter should be a natural number.");
+            return;
+        }
+        if (Long.parseLong(request[0]) < 0) {
+
+            System.out.println("The first parameter should be a natural number or zero.");
+
+        }
+        else if (Long.parseLong(request[1]) <= 0) {
+
+            System.out.println("The second parameter should be a natural number.");
+
+        } else {
+            StringBuilder filter = new StringBuilder();
+            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "even", "odd"};
+            for (int i = 0; i < properties.length; i++) {
+                if (request[2].equalsIgnoreCase(properties[i])) {
+                    filter.append(properties[i]);
+                    break;
+                }
+            }
+            if (filter.toString().equals("")) {
+                System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+            } else {
+                int counter = 0;
+                int i = 0;
+                while (counter < Long.parseLong(request[1])) {
+                    AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
+                    amazingNum.setProperties();
+                    if (amazingNum.isFilter(filter.toString())) {
+                        amazingNum.printListProperties();
+                        counter++;
+                    }
+                    i++;
+                }
+
+            }
+        }
+    }
+    public static void fourArgProperties(String[] request) {
+
+        if (request[2].equalsIgnoreCase(request[3])) {
+            threeArgProperties(request);
+            return;
+        }
+        try {
+            Long.parseLong(request[0]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The first parameter should be a natural number or zero.");
+            return;
+        }
+        try {
+            Long.parseLong(request[1]);
+        }
+        catch(NumberFormatException e) {
+            System.out.println("The second parameter should be a natural number.");
+            return;
+        }
+        if (Long.parseLong(request[0]) < 0) {
+
+            System.out.println("The first parameter should be a natural number or zero.");
+
+        }
+        else if (Long.parseLong(request[1]) <= 0) {
+
+            System.out.println("The second parameter should be a natural number.");
+
+        } else {
+            StringBuilder filterOne = new StringBuilder();
+            StringBuilder filterTwo = new StringBuilder();
+            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "even", "odd"};
+            for (int i = 0; i < properties.length; i++) {
+                if (request[2].equalsIgnoreCase(properties[i])) {
+                    filterOne.append(properties[i]);
+                }
+                if (request[3].equalsIgnoreCase(properties[i])) {
+                    filterTwo.append(properties[i]);
+                }
+            }
+            if (filterOne.toString().equals("") && filterTwo.toString().equals("")) {
+                System.out.println("The properties [" + request[2].toUpperCase() + ", " + request[3].toUpperCase() + "] are wrong.");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+            } else if(filterOne.toString().equals("")) {
+                System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+            } else if (filterTwo.toString().equals("")) {
+                System.out.println("The property [" + request[3].toUpperCase() + "] is wrong.");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+            }
+            else if (mutuallyExclusive(filterOne.toString(), filterTwo.toString())) {
+                System.out.println("The request contains mutually exclusive properties: [" + request[2].toUpperCase() + ", " + request[3].toUpperCase() + "]");
+                System.out.println("There are no numbers with these properties.");
+            }
+            else {
+                int counter = 0;
+                int i = 0;
+                while (counter < Long.parseLong(request[1])) {
+                    AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
+                    amazingNum.setProperties();
+                    if (amazingNum.isFilter(filterOne.toString()) && amazingNum.isFilter(filterTwo.toString())) {
+                        amazingNum.printListProperties();
+                        counter++;
+                    }
+                    i++;
+                }
+
+            }
+        }
+    }
+    public static boolean mutuallyExclusive(String filterOne, String filterTwo) {
+        switch (filterOne) {
+            case "even":
+                return filterTwo.equals("odd");
+            case "odd":
+                return filterTwo.equals("even");
+            case "duck":
+                return filterTwo.equals("spy");
+            case "spy":
+                return filterTwo.equals("duck");
+            case "sunny":
+                return filterTwo.equals("square");
+            case "square":
+                return filterTwo.equals("sunny");
+            default:
+                return false;
+        }
+    }
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
@@ -210,90 +419,30 @@ public class AmazingNumber {
 
                 printInstructions();
 
-            } else if (request.length == 1) {
-
-                try {
-                    Long.parseLong(request[0]);
-                }
-                catch(NumberFormatException e) {
-                    System.out.println("The first parameter should be a natural number or zero.");
-                    continue;
-                }
-                AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]));
-                if (amazingNum.value == 0) {
-                    System.out.println("Goodbye!");
-                    System.out.println("\nProcess finished with exit code 0");
+            } else if (request[0].equals("0")) {
+                System.out.println("Goodbye!");
+                System.out.println("\nProcess finished with exit code 0");
+                break;
+            } else { 
+                switch (request.length) {
+                case 1:
+                    oneArgProperties(request);
                     break;
-                } else if (!amazingNum.isNatural()) {
-                    System.out.println("The first parameter should be a natural number or zero.");
-                } else {
-                    amazingNum.setProperties();
-                    amazingNum.printSingleProperties();
-                }
-
-            } else if (request.length == 2) {
-                try {
-                    Long.parseLong(request[0]);
-                }
-                catch(NumberFormatException e) {
-                    System.out.println("The first parameter should be a natural number or zero.");
-                    continue;
-                }
-                try {
-                    Long.parseLong(request[1]);
-                }
-                catch(NumberFormatException e) {
-                    System.out.println("The second parameter should be a natural number.");
-                    continue;
-                }
-                if (Long.parseLong(request[0]) < 0) {
-
-                    System.out.println("The first parameter should be a natural number or zero.");
-
-                }
-                else if (Long.parseLong(request[1]) <= 0) {
-
-                    System.out.println("The second parameter should be a natural number.");
-
-                } else {
-                
-                    for (int i = 0; i < Long.parseLong(request[1]); i++) {
-
-                        AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
-                        amazingNum.setProperties();
-                        amazingNum.printListProperties();
-
-                    }
-                }
-            } else {
-                StringBuilder filter = new StringBuilder();
-                String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "even", "odd"};
-                for (int i = 0; i < properties.length; i++) {
-                    if (request[2].equalsIgnoreCase(properties[i])) {
-                        filter.append(properties[i]);
-                        break;
-                    }
-                }
-                if (filter.toString().equals("")) {
-                    System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
-                    System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD]");
-                } else {
-                    int counter = 0;
-                    int i = 0;
-                    while (counter < Long.parseLong(request[1])) {
-                        AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
-                        amazingNum.setProperties();
-                        if (amazingNum.isFilter(filter.toString())) {
-                            amazingNum.printListProperties();
-                            counter++;
-                        }
-                        i++;
-                    }
-
+                case 2:
+                    twoArgProperties(request);
+                    break;
+                case 3:
+                    threeArgProperties(request);
+                    break;
+                case 4:
+                    fourArgProperties(request);
+                    break;
+                default:
+                    System.out.println("You shouldn't see me");
                 }
             }
         }
-        
+             
         scanner.close();
     }
     
