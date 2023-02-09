@@ -211,7 +211,14 @@ public class AmazingNumber {
                 printInstructions();
 
             } else if (request.length == 1) {
-                
+
+                try {
+                    Long.parseLong(request[0]);
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("The first parameter should be a natural number or zero.");
+                    continue;
+                }
                 AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]));
                 if (amazingNum.value == 0) {
                     System.out.println("Goodbye!");
@@ -225,6 +232,20 @@ public class AmazingNumber {
                 }
 
             } else if (request.length == 2) {
+                try {
+                    Long.parseLong(request[0]);
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("The first parameter should be a natural number or zero.");
+                    continue;
+                }
+                try {
+                    Long.parseLong(request[1]);
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("The second parameter should be a natural number.");
+                    continue;
+                }
                 if (Long.parseLong(request[0]) < 0) {
 
                     System.out.println("The first parameter should be a natural number or zero.");
