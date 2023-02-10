@@ -14,6 +14,7 @@ public class AmazingNumber {
     private boolean isSpy;
     private boolean isSquare;
     private boolean isSunny;
+    private boolean isJumping;
 
     AmazingNumber(long value) {
         this.value = value;
@@ -25,8 +26,7 @@ public class AmazingNumber {
         System.out.println("- enter two natural numbers to obtain the properties of the list:");
         System.out.println("\t* the first parameter represents a starting number");
         System.out.println("\t* the second parameter shows how many consecutive numbers are to be processed");
-        System.out.println("- two natural numbers and a property to search for");
-        System.out.println("- two natural numbers and two properties to search for");
+        System.out.println("- two natural numbers and properties to search for");
         System.out.println("- seperate the parameters with one space");
         System.out.println("- enter 0 to exit.");
 
@@ -128,6 +128,27 @@ public class AmazingNumber {
             this.isSunny = true;
         }
     }
+    public void setJumping() {
+        long temp = this.value;
+        while (temp > 10) {
+            long onesPlace = temp % 10;
+            long tensPlace = (temp % 100) / 10;
+            long hundredsPlace = (temp % 1000) / 100;
+            if (temp < 100) {
+                if ((onesPlace + 1 == tensPlace || onesPlace - 1 == tensPlace)) {
+                    break;
+                }
+            }
+            else if ((onesPlace + 1 == tensPlace || onesPlace - 1 == tensPlace) && (hundredsPlace + 1 == tensPlace || hundredsPlace - 1 == tensPlace)) {
+                temp /= 10;
+            } else {
+                this.isJumping = false;
+                return;
+            }
+            
+        }
+        this.isJumping = true;
+    }
     public boolean isFilter(String filter) {
 
         switch (filter) {
@@ -145,6 +166,8 @@ public class AmazingNumber {
                 return this.isSquare;
             case "sunny":
                 return this.isSunny;
+            case "jumping":
+                return this.isJumping;
             case "even":
                 return this.isEven;
             case "odd":
@@ -163,6 +186,7 @@ public class AmazingNumber {
         System.out.printf("\t spy: %b\n", this.isSpy);
         System.out.printf("      square: %b\n", this.isSquare);
         System.out.printf("       sunny: %b\n", this.isSunny);
+        System.out.printf("     jumping: %b\n", this.isJumping);
         System.out.printf("\teven: %b\n", this.isEven);
         System.out.printf("\t odd: %b\n", this.isOdd);
        
@@ -192,6 +216,9 @@ public class AmazingNumber {
         if (this.isSunny) {
             properties.append("sunny, ");
         }
+        if (this.isJumping) {
+            properties.append("jumping, ");
+        }
         if (this.isEven) {
             properties.append("even");
         }
@@ -210,6 +237,7 @@ public class AmazingNumber {
         this.setGapful();
         this.setSpy();
         this.setSquareAndSunny();
+        this.setJumping();
 
     }
     public static void oneArgProperties(String[] request) {
@@ -291,7 +319,7 @@ public class AmazingNumber {
 
         } else {
             StringBuilder filter = new StringBuilder();
-            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "even", "odd"};
+            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "jumping", "even", "odd"};
             for (int i = 0; i < properties.length; i++) {
                 if (request[2].equalsIgnoreCase(properties[i])) {
                     filter.append(properties[i]);
@@ -300,7 +328,7 @@ public class AmazingNumber {
             }
             if (filter.toString().equals("")) {
                 System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
             } else {
                 int counter = 0;
                 int i = 0;
@@ -349,7 +377,7 @@ public class AmazingNumber {
         } else {
             StringBuilder filterOne = new StringBuilder();
             StringBuilder filterTwo = new StringBuilder();
-            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "even", "odd"};
+            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "jumping", "even", "odd"};
             for (int i = 0; i < properties.length; i++) {
                 if (request[2].equalsIgnoreCase(properties[i])) {
                     filterOne.append(properties[i]);
@@ -360,13 +388,13 @@ public class AmazingNumber {
             }
             if (filterOne.toString().equals("") && filterTwo.toString().equals("")) {
                 System.out.println("The properties [" + request[2].toUpperCase() + ", " + request[3].toUpperCase() + "] are wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
             } else if(filterOne.toString().equals("")) {
                 System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
             } else if (filterTwo.toString().equals("")) {
                 System.out.println("The property [" + request[3].toUpperCase() + "] is wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, EVEN, ODD]");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
             }
             else if (mutuallyExclusive(filterOne.toString(), filterTwo.toString())) {
                 System.out.println("The request contains mutually exclusive properties: [" + request[2].toUpperCase() + ", " + request[3].toUpperCase() + "]");
@@ -402,6 +430,8 @@ public class AmazingNumber {
                 return filterTwo.equals("square");
             case "square":
                 return filterTwo.equals("sunny");
+            case "jumping":
+                return false;
             default:
                 return false;
         }
