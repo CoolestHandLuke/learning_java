@@ -1,4 +1,5 @@
 package AmazingNumber;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AmazingNumber {
@@ -137,6 +138,9 @@ public class AmazingNumber {
             if (temp < 100) {
                 if ((onesPlace + 1 == tensPlace || onesPlace - 1 == tensPlace)) {
                     break;
+                } else {
+                    this.isJumping = false;
+                    return;
                 }
             }
             else if ((onesPlace + 1 == tensPlace || onesPlace - 1 == tensPlace) && (hundredsPlace + 1 == tensPlace || hundredsPlace - 1 == tensPlace)) {
@@ -256,7 +260,6 @@ public class AmazingNumber {
             amazingNum.printSingleProperties();
         }
     }
-
     public static void twoArgProperties(String[] request) {
         try {
             Long.parseLong(request[0]);
@@ -293,7 +296,7 @@ public class AmazingNumber {
         }
     }
 
-    public static void threeArgProperties(String[] request) {
+    public static void threeOrMoreArgProperties(String[] request) {
         try {
             Long.parseLong(request[0]);
         }
@@ -318,104 +321,66 @@ public class AmazingNumber {
             System.out.println("The second parameter should be a natural number.");
 
         } else {
-            StringBuilder filter = new StringBuilder();
+            ArrayList<String> filters = new ArrayList<>();
+            ArrayList<String> badFilters = new ArrayList<>();
             String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "jumping", "even", "odd"};
-            for (int i = 0; i < properties.length; i++) {
-                if (request[2].equalsIgnoreCase(properties[i])) {
-                    filter.append(properties[i]);
-                    break;
+            for (int i = 2; i < request.length; i++) {
+                boolean badFilter = true;
+                for (int j = 0; j < properties.length; j++) {
+                    if (request[i].equalsIgnoreCase(properties[j])) {
+                        filters.add(properties[j]);
+                        badFilter = false;
+                        break;
+                    }
+
+                }
+                if (badFilter) {
+                    badFilters.add(request[i]);
                 }
             }
-            if (filter.toString().equals("")) {
-                System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
+            if (badFilters.size() == 1) {
+                System.out.println("The property " + badFilters.toString().toUpperCase() + " is wrong.");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
+            } else if (badFilters.size() > 1) {
+                System.out.println("The properties " + badFilters.toString().toUpperCase() + " are wrong.");
                 System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
             } else {
-                int counter = 0;
-                int i = 0;
-                while (counter < Long.parseLong(request[1])) {
-                    AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
-                    amazingNum.setProperties();
-                    if (amazingNum.isFilter(filter.toString())) {
-                        amazingNum.printListProperties();
-                        counter++;
+                // Check for mutually exclusive properties
+                for (int i = 0; i < filters.size(); i++) {
+                    for (int j = i + 1; j < filters.size(); j++) {
+                        if (mutuallyExclusive(filters.get(i), filters.get(j))) {
+                            ArrayList<String> mutuallyExclusiveFilters = new ArrayList<String>();
+                            mutuallyExclusiveFilters.add(filters.get(i));
+                            mutuallyExclusiveFilters.add(filters.get(j));
+                            System.out.println("The request contains mutually exclusive properties: " + filters.toString().toUpperCase());
+                            System.out.println("There are no numbers with these properties.");
+                            return;
+                        }
                     }
-                    i++;
+                }
+                int numbersPrintedCounter = 0;
+                int increment = 0;
+                while (numbersPrintedCounter < Long.parseLong(request[1])) {
+                    AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + increment);
+                    amazingNum.setProperties();
+                    int filtersMatched = 0;
+                    for (int i = 0; i < filters.size(); i++) {
+                        if (amazingNum.isFilter(filters.get(i))) {
+                            filtersMatched++;
+                        }
+                        if (filtersMatched == filters.size()) {
+                            amazingNum.printListProperties();
+                            numbersPrintedCounter++;
+                        }
+                    }
+                    
+                    increment++;
                 }
 
             }
         }
     }
-    public static void fourArgProperties(String[] request) {
 
-        if (request[2].equalsIgnoreCase(request[3])) {
-            threeArgProperties(request);
-            return;
-        }
-        try {
-            Long.parseLong(request[0]);
-        }
-        catch(NumberFormatException e) {
-            System.out.println("The first parameter should be a natural number or zero.");
-            return;
-        }
-        try {
-            Long.parseLong(request[1]);
-        }
-        catch(NumberFormatException e) {
-            System.out.println("The second parameter should be a natural number.");
-            return;
-        }
-        if (Long.parseLong(request[0]) < 0) {
-
-            System.out.println("The first parameter should be a natural number or zero.");
-
-        }
-        else if (Long.parseLong(request[1]) <= 0) {
-
-            System.out.println("The second parameter should be a natural number.");
-
-        } else {
-            StringBuilder filterOne = new StringBuilder();
-            StringBuilder filterTwo = new StringBuilder();
-            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "jumping", "even", "odd"};
-            for (int i = 0; i < properties.length; i++) {
-                if (request[2].equalsIgnoreCase(properties[i])) {
-                    filterOne.append(properties[i]);
-                }
-                if (request[3].equalsIgnoreCase(properties[i])) {
-                    filterTwo.append(properties[i]);
-                }
-            }
-            if (filterOne.toString().equals("") && filterTwo.toString().equals("")) {
-                System.out.println("The properties [" + request[2].toUpperCase() + ", " + request[3].toUpperCase() + "] are wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
-            } else if(filterOne.toString().equals("")) {
-                System.out.println("The property [" + request[2].toUpperCase() + "] is wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
-            } else if (filterTwo.toString().equals("")) {
-                System.out.println("The property [" + request[3].toUpperCase() + "] is wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
-            }
-            else if (mutuallyExclusive(filterOne.toString(), filterTwo.toString())) {
-                System.out.println("The request contains mutually exclusive properties: [" + request[2].toUpperCase() + ", " + request[3].toUpperCase() + "]");
-                System.out.println("There are no numbers with these properties.");
-            }
-            else {
-                int counter = 0;
-                int i = 0;
-                while (counter < Long.parseLong(request[1])) {
-                    AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + i);
-                    amazingNum.setProperties();
-                    if (amazingNum.isFilter(filterOne.toString()) && amazingNum.isFilter(filterTwo.toString())) {
-                        amazingNum.printListProperties();
-                        counter++;
-                    }
-                    i++;
-                }
-
-            }
-        }
-    }
     public static boolean mutuallyExclusive(String filterOne, String filterTwo) {
         switch (filterOne) {
             case "even":
@@ -461,14 +426,8 @@ public class AmazingNumber {
                 case 2:
                     twoArgProperties(request);
                     break;
-                case 3:
-                    threeArgProperties(request);
-                    break;
-                case 4:
-                    fourArgProperties(request);
-                    break;
                 default:
-                    System.out.println("You shouldn't see me");
+                    threeOrMoreArgProperties(request);;
                 }
             }
         }
