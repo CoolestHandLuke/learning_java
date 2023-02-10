@@ -10,7 +10,7 @@ public class MyFrame extends JFrame{
 
         this.setTitle("JFrame title goes here"); // Sets title of the instance
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Exits out of application rather than hide
-        this.setResizable(false); // Unable to change window size
+        this.setResizable(true); // Able to change window size
         this.setSize(420, 420); // Sets the x dimension and y dismension
         this.setVisible(true);  // Make frame visible
 
