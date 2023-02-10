@@ -16,6 +16,8 @@ public class AmazingNumber {
     private boolean isSquare;
     private boolean isSunny;
     private boolean isJumping;
+    private boolean isHappy;
+    private boolean isSad;
 
     AmazingNumber(long value) {
         this.value = value;
@@ -28,6 +30,7 @@ public class AmazingNumber {
         System.out.println("\t* the first parameter represents a starting number");
         System.out.println("\t* the second parameter shows how many consecutive numbers are to be processed");
         System.out.println("- two natural numbers and properties to search for");
+        System.out.println("- a property preceded by minus must not be present in numbers");
         System.out.println("- seperate the parameters with one space");
         System.out.println("- enter 0 to exit.");
 
@@ -153,6 +156,37 @@ public class AmazingNumber {
         }
         this.isJumping = true;
     }
+    public void setHappyAndSad() {
+        
+        ArrayList<Long> valuesTried = new ArrayList<>();
+        valuesTried.add(this.value);
+        while (true) {
+            long temp = sumOfSquares(valuesTried.get(valuesTried.size() - 1));
+            if (temp == 1) {
+                this.isHappy = true;
+                this.isSad = false;
+                break;
+            } else if (valuesTried.contains(temp)){
+                this.isHappy = false;
+                this.isSad = true;
+                break;
+            } else {
+                valuesTried.add(temp);
+            }
+        }
+    }
+    public static long sumOfSquares(long value) {
+        
+        long sum = 0;
+        while (value > 0) {
+            long temp = value % 10;
+            sum += Math.pow(temp, 2);
+            value /= 10;
+        }
+        
+        return sum;
+        
+    }
     public boolean isFilter(String filter) {
 
         switch (filter) {
@@ -172,6 +206,10 @@ public class AmazingNumber {
                 return this.isSunny;
             case "jumping":
                 return this.isJumping;
+            case "happy":
+                return this.isHappy;
+            case "sad":
+                return this.isSad;
             case "even":
                 return this.isEven;
             case "odd":
@@ -191,6 +229,8 @@ public class AmazingNumber {
         System.out.printf("      square: %b\n", this.isSquare);
         System.out.printf("       sunny: %b\n", this.isSunny);
         System.out.printf("     jumping: %b\n", this.isJumping);
+        System.out.printf("       happy: %b\n", this.isHappy);
+        System.out.printf("         sad: %b\n", this.isSad);
         System.out.printf("\teven: %b\n", this.isEven);
         System.out.printf("\t odd: %b\n", this.isOdd);
        
@@ -223,6 +263,12 @@ public class AmazingNumber {
         if (this.isJumping) {
             properties.append("jumping, ");
         }
+        if (this.isHappy) {
+            properties.append("happy, ");
+        }
+        if (this.isSad) {
+            properties.append("sad, ");
+        }
         if (this.isEven) {
             properties.append("even");
         }
@@ -242,6 +288,7 @@ public class AmazingNumber {
         this.setSpy();
         this.setSquareAndSunny();
         this.setJumping();
+        this.setHappyAndSad();
 
     }
     public static void oneArgProperties(String[] request) {
@@ -321,14 +368,21 @@ public class AmazingNumber {
             System.out.println("The second parameter should be a natural number.");
 
         } else {
-            ArrayList<String> filters = new ArrayList<>();
+            ArrayList<String> includeFilters = new ArrayList<>();
+            ArrayList<String> removeFilters = new ArrayList<>();
             ArrayList<String> badFilters = new ArrayList<>();
-            String[] properties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "jumping", "even", "odd"};
+            String[] includeProperties = new String[] {"buzz", "duck", "palindromic", "gapful", "spy", "square", "sunny", "jumping", "happy", "sad", "even", "odd"};
+            String[] removeProperties = new String[] {"-buzz", "-duck", "-palindromic", "-gapful", "-spy", "-square", "-sunny", "-jumping", "-happy", "-sad", "-even", "-odd"};
             for (int i = 2; i < request.length; i++) {
                 boolean badFilter = true;
-                for (int j = 0; j < properties.length; j++) {
-                    if (request[i].equalsIgnoreCase(properties[j])) {
-                        filters.add(properties[j]);
+                for (int j = 0; j < includeProperties.length; j++) {
+                    if (request[i].equalsIgnoreCase(includeProperties[j])) {
+                        includeFilters.add(includeProperties[j]);
+                        badFilter = false;
+                        break;
+                    }
+                    if (request[i].equalsIgnoreCase(removeProperties[j])) {
+                        removeFilters.add(includeProperties[j]);
                         badFilter = false;
                         break;
                     }
@@ -340,19 +394,19 @@ public class AmazingNumber {
             }
             if (badFilters.size() == 1) {
                 System.out.println("The property " + badFilters.toString().toUpperCase() + " is wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD, EVEN, ODD]");
             } else if (badFilters.size() > 1) {
                 System.out.println("The properties " + badFilters.toString().toUpperCase() + " are wrong.");
-                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, EVEN, ODD]");
+                System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD, EVEN, ODD]");
             } else {
                 // Check for mutually exclusive properties
-                for (int i = 0; i < filters.size(); i++) {
-                    for (int j = i + 1; j < filters.size(); j++) {
-                        if (mutuallyExclusive(filters.get(i), filters.get(j))) {
+                for (int i = 0; i < includeFilters.size(); i++) {
+                    for (int j = i + 1; j < includeFilters.size(); j++) {
+                        if (mutuallyExclusive(includeFilters.get(i), includeFilters.get(j))) {
                             ArrayList<String> mutuallyExclusiveFilters = new ArrayList<String>();
-                            mutuallyExclusiveFilters.add(filters.get(i));
-                            mutuallyExclusiveFilters.add(filters.get(j));
-                            System.out.println("The request contains mutually exclusive properties: " + filters.toString().toUpperCase());
+                            mutuallyExclusiveFilters.add(includeFilters.get(i));
+                            mutuallyExclusiveFilters.add(includeFilters.get(j));
+                            System.out.println("The request contains mutually exclusive properties: " + includeFilters.toString().toUpperCase());
                             System.out.println("There are no numbers with these properties.");
                             return;
                         }
@@ -364,15 +418,22 @@ public class AmazingNumber {
                     AmazingNumber amazingNum = new AmazingNumber(Long.parseLong(request[0]) + increment);
                     amazingNum.setProperties();
                     int filtersMatched = 0;
-                    for (int i = 0; i < filters.size(); i++) {
-                        if (amazingNum.isFilter(filters.get(i))) {
+                    int removeFiltersMatched = 0;
+                    for (int i = 0; i < includeFilters.size(); i++) {
+                        if (amazingNum.isFilter(includeFilters.get(i))) {
                             filtersMatched++;
                         }
-                        if (filtersMatched == filters.size()) {
+                    }
+                    for (int i = 0; i < removeFilters.size(); i++) {
+                        if (!amazingNum.isFilter(removeFilters.get(i))) {
+                            removeFiltersMatched++;
+                        }
+                    }
+                        if (filtersMatched == includeFilters.size() && removeFiltersMatched == removeFilters.size()) {
                             amazingNum.printListProperties();
                             numbersPrintedCounter++;
                         }
-                    }
+                    
                     
                     increment++;
                 }
@@ -397,6 +458,10 @@ public class AmazingNumber {
                 return filterTwo.equals("sunny");
             case "jumping":
                 return false;
+            case "happy":
+                return filterTwo.equals("sad");
+            case "sad":
+                return filterTwo.equals("happy");
             default:
                 return false;
         }
