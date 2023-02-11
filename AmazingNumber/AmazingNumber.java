@@ -214,6 +214,30 @@ public class AmazingNumber {
                 return this.isEven;
             case "odd":
                 return this.isOdd;
+            case "-buzz": 
+                return !this.isBuzz;
+            case "-duck":
+                return !this.isDuck;
+            case "-palindromic":
+                return !this.isPalindromic;
+            case "-gapful":
+                return !this.isGapful;
+            case "-spy":
+                return !this.isSpy;
+            case "-square":
+                return !this.isSquare;
+            case "-sunny":
+                return !this.isSunny;
+            case "-jumping":
+                return !this.isJumping;
+            case "-happy":
+                return !this.isHappy;
+            case "-sad":
+                return !this.isSad;
+            case "-even":
+                return !this.isEven;
+            case "-odd":
+                return !this.isOdd;
             default:
                 return false;
         }
@@ -382,7 +406,7 @@ public class AmazingNumber {
                         break;
                     }
                     if (request[i].equalsIgnoreCase(removeProperties[j])) {
-                        removeFilters.add(includeProperties[j]);
+                        removeFilters.add(removeProperties[j]);
                         badFilter = false;
                         break;
                     }
@@ -399,14 +423,40 @@ public class AmazingNumber {
                 System.out.println("The properties " + badFilters.toString().toUpperCase() + " are wrong.");
                 System.out.println("Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD, EVEN, ODD]");
             } else {
-                // Check for mutually exclusive properties
+                // Check for mutually exclusive properties in the includeFilters
                 for (int i = 0; i < includeFilters.size(); i++) {
                     for (int j = i + 1; j < includeFilters.size(); j++) {
                         if (mutuallyExclusive(includeFilters.get(i), includeFilters.get(j))) {
                             ArrayList<String> mutuallyExclusiveFilters = new ArrayList<String>();
                             mutuallyExclusiveFilters.add(includeFilters.get(i));
                             mutuallyExclusiveFilters.add(includeFilters.get(j));
-                            System.out.println("The request contains mutually exclusive properties: " + includeFilters.toString().toUpperCase());
+                            System.out.println("The request contains mutually exclusive properties: " + mutuallyExclusiveFilters.toString().toUpperCase());
+                            System.out.println("There are no numbers with these properties.");
+                            return;
+                        }
+                    }
+                }
+                // Check for mutually exclusive properties in the removeFilters
+                for (int i = 0; i < removeFilters.size(); i++) {
+                    for (int j = i + 1; j < removeFilters.size(); j++) {
+                        if (mutuallyExclusive(removeFilters.get(i), removeFilters.get(j))) {
+                            ArrayList<String> mutuallyExclusiveFilters = new ArrayList<String>();
+                            mutuallyExclusiveFilters.add(removeFilters.get(i));
+                            mutuallyExclusiveFilters.add(removeFilters.get(j));
+                            System.out.println("The request contains mutually exclusive properties: " + mutuallyExclusiveFilters.toString().toUpperCase());
+                            System.out.println("There are no numbers with these properties.");
+                            return;
+                        }
+                    }
+                }
+                // Check for mutually exclusive properties between the includeFilters and removeFilters
+                for (int i = 0; i < removeFilters.size(); i++) {
+                    for (int j = 0; j < includeFilters.size(); j++) {
+                        if (mutuallyExclusive(removeFilters.get(i), includeFilters.get(j))) {
+                            ArrayList<String> mutuallyExclusiveFilters = new ArrayList<String>();
+                            mutuallyExclusiveFilters.add(removeFilters.get(i));
+                            mutuallyExclusiveFilters.add(includeFilters.get(j));
+                            System.out.println("The request contains mutually exclusive properties: " + mutuallyExclusiveFilters.toString().toUpperCase());
                             System.out.println("There are no numbers with these properties.");
                             return;
                         }
@@ -425,7 +475,7 @@ public class AmazingNumber {
                         }
                     }
                     for (int i = 0; i < removeFilters.size(); i++) {
-                        if (!amazingNum.isFilter(removeFilters.get(i))) {
+                        if (amazingNum.isFilter(removeFilters.get(i))) {
                             removeFiltersMatched++;
                         }
                     }
@@ -446,22 +496,40 @@ public class AmazingNumber {
         switch (filterOne) {
             case "even":
                 return filterTwo.equals("odd");
+            case "-even":
+                return filterTwo.equals("-odd") || filterTwo.equals("even");
             case "odd":
                 return filterTwo.equals("even");
+            case "-odd":
+                return filterTwo.equals("-even") || filterTwo.equals("odd");   
             case "duck":
                 return filterTwo.equals("spy");
+            case "-duck":
+                return filterTwo.equals("-spy") || filterTwo.equals("duck");   
             case "spy":
                 return filterTwo.equals("duck");
+            case "-spy":
+                return filterTwo.equals("-duck") || filterTwo.equals("spy");    
             case "sunny":
                 return filterTwo.equals("square");
+            case "-sunny":
+                return filterTwo.equals("sunny");    
             case "square":
                 return filterTwo.equals("sunny");
+            case "-square":
+                return filterTwo.equals("square");    
             case "jumping":
-                return false;
+                return filterTwo.equals("-jumping");
+            case "-jumping":
+                return filterTwo.equals("jumping");
             case "happy":
                 return filterTwo.equals("sad");
+            case "-happy":
+                return filterTwo.equals("-sad") || filterTwo.equals("happy");
             case "sad":
                 return filterTwo.equals("happy");
+            case "-sad":
+                return filterTwo.equals("-happy") || filterTwo.equals("sad");
             default:
                 return false;
         }
