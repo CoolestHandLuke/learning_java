@@ -199,7 +199,7 @@ public class Main {
             }
         }
     }
-    public static boolean takeAShot(String[][] gameBoard, Scanner scanner) {
+    public static boolean takeAShot(String[][] gameBoard, String[][] foggedGameBoard, Scanner scanner) {
 
         System.out.println("\nTake a shot!\n");
         boolean hit = false;
@@ -215,9 +215,11 @@ public class Main {
             // Good shot, now check to see if anything is there
             if (gameBoard[shotRow][shotCol].equals("O")) {
                 gameBoard[shotRow][shotCol] = "X";
+                foggedGameBoard[shotRow][shotCol] = "X";
                 hit = true;
             } else {
                 gameBoard[shotRow][shotCol] = "M";
+                foggedGameBoard[shotRow][shotCol] = "M";
             }
             return hit;
 
@@ -229,6 +231,7 @@ public class Main {
     public static void main(String[] args) {
 
         String[][] player1 = createGameBoard();
+        String[][] player1Fogged = createGameBoard();
         Scanner scanner = new Scanner(System.in);
         printGameBoard(player1);
         placeShipOnBoard(player1, "Aircraft Carrier", scanner);
@@ -243,15 +246,16 @@ public class Main {
         printGameBoard(player1);
 
         System.out.println("\nThe game starts!");
-        printGameBoard(player1);
+        printGameBoard(player1Fogged);
 
-        boolean shot = takeAShot(player1, scanner);
-        printGameBoard(player1);
+        boolean shot = takeAShot(player1, player1Fogged, scanner);
+        printGameBoard(player1Fogged);
         if (shot) {
             System.out.println("\nYou hit a ship!");
         } else {
             System.out.println("\nYou missed!");
         }
+        printGameBoard(player1);
 
         scanner.close();
         
