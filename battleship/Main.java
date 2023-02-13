@@ -199,12 +199,36 @@ public class Main {
             }
         }
     }
-    
+    public static boolean takeAShot(String[][] gameBoard, Scanner scanner) {
+
+        System.out.println("\nTake a shot!\n");
+        boolean hit = false;
+        while (true) {
+            String shotLocation = scanner.next().toUpperCase().strip();
+            // Check for a valid shot location
+            int shotRow = (int)shotLocation.charAt(0) - 64;
+            int shotCol = Integer.parseInt(shotLocation.substring(1));
+            if (shotRow < 1 || shotRow > 10 || shotCol < 1 || shotCol > 10) {
+                System.out.println("\nError! You entered the wrong coordinates! Try again:\n");
+                continue;
+            }
+            // Good shot, now check to see if anything is there
+            if (gameBoard[shotRow][shotCol].equals("O")) {
+                gameBoard[shotRow][shotCol] = "X";
+                hit = true;
+            } else {
+                gameBoard[shotRow][shotCol] = "M";
+            }
+            return hit;
+
+        }
+
+
+    }
 
     public static void main(String[] args) {
 
         String[][] player1 = createGameBoard();
-        //String[][] player2 = createGameBoard();
         Scanner scanner = new Scanner(System.in);
         printGameBoard(player1);
         placeShipOnBoard(player1, "Aircraft Carrier", scanner);
@@ -217,6 +241,17 @@ public class Main {
         printGameBoard(player1);
         placeShipOnBoard(player1, "Destroyer", scanner);
         printGameBoard(player1);
+
+        System.out.println("\nThe game starts!");
+        printGameBoard(player1);
+
+        boolean shot = takeAShot(player1, scanner);
+        printGameBoard(player1);
+        if (shot) {
+            System.out.println("\nYou hit a ship!");
+        } else {
+            System.out.println("\nYou missed!");
+        }
 
         scanner.close();
         
