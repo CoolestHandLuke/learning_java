@@ -199,10 +199,10 @@ public class Main {
             }
         }
     }
-    public static boolean takeAShot(String[][] gameBoard, String[][] foggedGameBoard, Scanner scanner) {
+    public static boolean[] takeAShot(String[][] gameBoard, String[][] foggedGameBoard, Scanner scanner) {
 
         System.out.println("\nTake a shot!\n");
-        boolean hit = false;
+        boolean[] hitSunkAndSpotAlreadyShot = {false, false, false};
         while (true) {
             String shotLocation = scanner.next().toUpperCase().strip();
             // Check for a valid shot location
@@ -216,18 +216,62 @@ public class Main {
             if (gameBoard[shotRow][shotCol].equals("O")) {
                 gameBoard[shotRow][shotCol] = "X";
                 foggedGameBoard[shotRow][shotCol] = "X";
-                hit = true;
+                hitSunkAndSpotAlreadyShot[0] = true;
+                hitSunkAndSpotAlreadyShot[1] = isShipSunk(gameBoard, shotRow, shotCol);
+            } else if (gameBoard[shotRow][shotCol].equals("X")) {
+                hitSunkAndSpotAlreadyShot[0] = true;
+                hitSunkAndSpotAlreadyShot[1] = false;
+                hitSunkAndSpotAlreadyShot[2] = true;
             } else {
                 gameBoard[shotRow][shotCol] = "M";
                 foggedGameBoard[shotRow][shotCol] = "M";
             }
-            return hit;
+            return hitSunkAndSpotAlreadyShot;
 
         }
 
 
     }
+    public static boolean isShipSunk(String[][] gameBoard, int shotRow, int shotCol) {
 
+        // For any given hit, you should have to move over no more than 4 steps in any direction to find an "O". If you don't, 
+        // then the ship is sunk
+        // Check above
+        for (int i = 0; i < 3; i++) {
+            if (shotRow - i > 1 && gameBoard[shotRow - i][shotCol].equals("O")) {
+                return false;
+            } else if (shotRow - i > 1 && gameBoard[shotRow - i][shotCol].equals("~")) {
+                break;
+            }
+        }
+        // Check below
+        for (int i = 0; i < 3; i++) {
+            if (shotRow + i < 10 && gameBoard[shotRow + i][shotCol].equals("O")) {
+                return false;
+            } else if (shotRow + i < 10 && gameBoard[shotRow + i][shotCol].equals("~")) {
+                break;
+            }
+        }
+        // Check left
+        for (int i = 0; i < 3; i++) {
+            if (shotCol - i > 1 && gameBoard[shotRow][shotCol - 1].equals("O")) {
+                return false;
+            } else if (shotCol - i > 1 && gameBoard[shotRow][shotCol - 1].equals("~")) {
+                break;
+            }
+        }
+        // Check right
+        for (int i = 0; i < 3; i++) {
+            if (shotCol + i < 10 && gameBoard[shotRow][shotCol + 1].equals("O")) {
+                return false;
+            } else if (shotCol + i < 1 && gameBoard[shotRow][shotCol + 1].equals("~")) {
+                break;
+            }
+        }
+        return true;
+        
+
+    }
     public static void main(String[] args) {
 
         String[][] player1 = createGameBoard();
@@ -247,15 +291,34 @@ public class Main {
 
         System.out.println("\nThe game starts!");
         printGameBoard(player1Fogged);
-
-        boolean shot = takeAShot(player1, player1Fogged, scanner);
-        printGameBoard(player1Fogged);
-        if (shot) {
-            System.out.println("\nYou hit a ship!");
-        } else {
-            System.out.println("\nYou missed!");
+        // Loop until all the ships are sank
+        boolean allShipsSank = false;
+        int numberOfHits = 0;
+        while (!allShipsSank) {
+            
+            boolean[] shotResults = takeAShot(player1, player1Fogged, scanner);
+            boolean hit = shotResults[0];
+            boolean shipSunk = shotResults[1];
+            boolean spotAlreadyShot = shotResults[2];
+            printGameBoard(player1Fogged);
+            if (hit) {
+                if (!spotAlreadyShot) {
+                    numberOfHits++;
+                }
+                if (numberOfHits == 17) {
+                    System.out.println("You sank the last ship. You won. Congratulations!");
+                    break;
+                }
+                if (shipSunk) {
+                    System.out.println("You sank a ship! Specifiy a new target:\n");
+                } else {
+                    System.out.println("\nYou hit a ship! Try again:\n");
+                }
+            } else {
+                System.out.println("\nYou missed. Try again:\n");
+            }
+            
         }
-        printGameBoard(player1);
 
         scanner.close();
         
