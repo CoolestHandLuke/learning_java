@@ -1,3 +1,10 @@
+/* This is my attempt at the classic game of battleship. This was one of my favorite board games growing up and it was a very fun project
+ * to implement. The most challenging part was the beginning: getting the game boards set up, figuring out how to set game pieces, how to 
+ * check and make sure they were not too close to each other, etc. It was a fun an challenging project and I've definitely learned a lot. 
+ * In the future I may come back to this guy and turn it in to a GUI. I'm not sure how hard it would be but it sounds kind of cool. 
+ * Luke Shea, 2/17/2023
+ */
+
 package battleship;
 
 import java.util.Scanner;
@@ -24,13 +31,32 @@ public class Main {
     }
     public static void printGameBoard(String[][] gameBoard) {
 
-        System.out.println();
         for (int i = 0; i < gameBoard.length; i++) {
             for (int j = 0; j < gameBoard[i].length; j++) {
                 System.out.print(gameBoard[i][j] + " ");
             }
             System.out.println();
         }
+    }
+    public static void placeShipsOnBoard(String[][] gameBoard, Scanner scanner) {
+        System.out.println();
+        printGameBoard(gameBoard);
+        placeShipOnBoard(gameBoard, "Aircraft Carrier", scanner);
+        System.out.println();
+        printGameBoard(gameBoard);
+        placeShipOnBoard(gameBoard, "Battleship", scanner);
+        System.out.println();
+        printGameBoard(gameBoard);
+        placeShipOnBoard(gameBoard, "Submarine", scanner);
+        System.out.println();
+        printGameBoard(gameBoard);
+        placeShipOnBoard(gameBoard, "Cruiser", scanner);
+        System.out.println();
+        printGameBoard(gameBoard);
+        placeShipOnBoard(gameBoard, "Destroyer", scanner);
+        System.out.println();
+        printGameBoard(gameBoard);
+
     }
     public static void placeShipOnBoard(String[][] gameBoard, String ship, Scanner scanner) {
 
@@ -199,9 +225,8 @@ public class Main {
             }
         }
     }
-    public static boolean[] takeAShot(String[][] gameBoard, String[][] foggedGameBoard, Scanner scanner) {
+    public static boolean[] takeAShot(String[][] gameBoardBeingShotAt, String[][] foggedGameBoardBeingShotAt, Scanner scanner) {
 
-        System.out.println("\nTake a shot!\n");
         boolean[] hitSunkAndSpotAlreadyShot = {false, false, false};
         while (true) {
             String shotLocation = scanner.next().toUpperCase().strip();
@@ -213,18 +238,18 @@ public class Main {
                 continue;
             }
             // Good shot, now check to see if anything is there
-            if (gameBoard[shotRow][shotCol].equals("O")) {
-                gameBoard[shotRow][shotCol] = "X";
-                foggedGameBoard[shotRow][shotCol] = "X";
+            if (gameBoardBeingShotAt[shotRow][shotCol].equals("O")) {
+                gameBoardBeingShotAt[shotRow][shotCol] = "X";
+                foggedGameBoardBeingShotAt[shotRow][shotCol] = "X";
                 hitSunkAndSpotAlreadyShot[0] = true;
-                hitSunkAndSpotAlreadyShot[1] = isShipSunk(gameBoard, shotRow, shotCol);
-            } else if (gameBoard[shotRow][shotCol].equals("X")) {
+                hitSunkAndSpotAlreadyShot[1] = isShipSunk(gameBoardBeingShotAt, shotRow, shotCol);
+            } else if (gameBoardBeingShotAt[shotRow][shotCol].equals("X")) {
                 hitSunkAndSpotAlreadyShot[0] = true;
                 hitSunkAndSpotAlreadyShot[1] = false;
                 hitSunkAndSpotAlreadyShot[2] = true;
             } else {
-                gameBoard[shotRow][shotCol] = "M";
-                foggedGameBoard[shotRow][shotCol] = "M";
+                gameBoardBeingShotAt[shotRow][shotCol] = "M";
+                foggedGameBoardBeingShotAt[shotRow][shotCol] = "M";
             }
             return hitSunkAndSpotAlreadyShot;
 
@@ -237,7 +262,7 @@ public class Main {
         // For any given hit, you should have to move over no more than 4 steps in any direction to find an "O". If you don't, 
         // then the ship is sunk
         // Check above
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i < 5; i++) {
             if (shotRow - i > 1 && gameBoard[shotRow - i][shotCol].equals("O")) {
                 return false;
             } else if (shotRow - i > 1 && gameBoard[shotRow - i][shotCol].equals("~")) {
@@ -245,7 +270,7 @@ public class Main {
             }
         }
         // Check below
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i < 5; i++) {
             if (shotRow + i < 10 && gameBoard[shotRow + i][shotCol].equals("O")) {
                 return false;
             } else if (shotRow + i < 10 && gameBoard[shotRow + i][shotCol].equals("~")) {
@@ -253,18 +278,18 @@ public class Main {
             }
         }
         // Check left
-        for (int i = 0; i < 3; i++) {
-            if (shotCol - i > 1 && gameBoard[shotRow][shotCol - 1].equals("O")) {
+        for (int i = 1; i < 5; i++) {
+            if (shotCol - i > 1 && gameBoard[shotRow][shotCol - i].equals("O")) {
                 return false;
-            } else if (shotCol - i > 1 && gameBoard[shotRow][shotCol - 1].equals("~")) {
+            } else if (shotCol - i > 1 && gameBoard[shotRow][shotCol - i].equals("~")) {
                 break;
             }
         }
         // Check right
-        for (int i = 0; i < 3; i++) {
-            if (shotCol + i < 10 && gameBoard[shotRow][shotCol + 1].equals("O")) {
+        for (int i = 1; i < 5; i++) {
+            if (shotCol + i < 10 && gameBoard[shotRow][shotCol + i].equals("O")) {
                 return false;
-            } else if (shotCol + i < 1 && gameBoard[shotRow][shotCol + 1].equals("~")) {
+            } else if (shotCol + i < 1 && gameBoard[shotRow][shotCol + i].equals("~")) {
                 break;
             }
         }
@@ -274,51 +299,93 @@ public class Main {
     }
     public static void main(String[] args) {
 
+        // Since battleship is a two player game, start off the main loop by creating two gameboards, one for each player
         String[][] player1 = createGameBoard();
+        String[][] player2 = createGameBoard();
         String[][] player1Fogged = createGameBoard();
-        Scanner scanner = new Scanner(System.in);
-        printGameBoard(player1);
-        placeShipOnBoard(player1, "Aircraft Carrier", scanner);
-        printGameBoard(player1);
-        placeShipOnBoard(player1, "Battleship", scanner);
-        printGameBoard(player1);
-        placeShipOnBoard(player1, "Submarine", scanner);
-        printGameBoard(player1);
-        placeShipOnBoard(player1, "Cruiser", scanner);
-        printGameBoard(player1);
-        placeShipOnBoard(player1, "Destroyer", scanner);
-        printGameBoard(player1);
+        String[][] player2Fogged = createGameBoard();
 
-        System.out.println("\nThe game starts!");
-        printGameBoard(player1Fogged);
-        // Loop until all the ships are sank
-        boolean allShipsSank = false;
-        int numberOfHits = 0;
-        while (!allShipsSank) {
-            
-            boolean[] shotResults = takeAShot(player1, player1Fogged, scanner);
-            boolean hit = shotResults[0];
-            boolean shipSunk = shotResults[1];
-            boolean spotAlreadyShot = shotResults[2];
-            printGameBoard(player1Fogged);
-            if (hit) {
-                if (!spotAlreadyShot) {
-                    numberOfHits++;
-                }
-                if (numberOfHits == 17) {
-                    System.out.println("You sank the last ship. You won. Congratulations!");
-                    break;
-                }
-                if (shipSunk) {
-                    System.out.println("You sank a ship! Specifiy a new target:\n");
+        // Allow both players to place their ships on their boards
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Player 1, place your ships on the game field");
+        placeShipsOnBoard(player1, scanner);
+        System.out.println("Press Enter and pass the move to another player\n...");
+        scanner.nextLine();
+        System.out.println("Player 2, place your ships on the game field");
+        placeShipsOnBoard(player2, scanner);
+        System.out.println("Press Enter and pass the move to another player\n...");
+        scanner.nextLine();
+        
+        // At this point the game can begin. It will continue until someone loses
+        int player1Hits = 0;
+        int player2Hits = 0;
+        boolean player1Turn = true;
+        while (true) {
+            if (player1Turn) {
+                printGameBoard(player2Fogged);
+                System.out.println("---------------------");
+                printGameBoard(player1);
+                System.out.println("Player 1, it's your turn:\n");
+                boolean[] shotResults = takeAShot(player2, player2Fogged, scanner);
+                boolean hit = shotResults[0];
+                boolean shipSunk = shotResults[1];
+                boolean spotAlreadyShot = shotResults[2];
+                if (hit) {
+                    if (!spotAlreadyShot) {
+                        player1Hits++;
+                    }
+                    if (player1Hits == 17) {
+                        System.out.println("You sank the last ship. You won. Congratulations!");
+                        break;
+                    }
+                    if (shipSunk) {
+                        System.out.println("You sank a ship!");
+                    } else {
+                        System.out.println("\nYou hit a ship!");
+                    }
                 } else {
-                    System.out.println("\nYou hit a ship! Try again:\n");
+                    System.out.println("\nYou missed!");
                 }
+                player1Turn = !player1Turn;
+                System.out.println("Press Enter and pass the move to another player\n...");
+                scanner.nextLine();
+
             } else {
-                System.out.println("\nYou missed. Try again:\n");
+                printGameBoard(player1Fogged);
+                System.out.println("---------------------");
+                printGameBoard(player2);
+                System.out.println("Player 2, it's your turn:\n");
+                boolean[] shotResults = takeAShot(player1, player1Fogged, scanner);
+                boolean hit = shotResults[0];
+                boolean shipSunk = shotResults[1];
+                boolean spotAlreadyShot = shotResults[2];
+                if (hit) {
+                    if (!spotAlreadyShot) {
+                        player2Hits++;
+                    }
+                    if (player2Hits == 17) {
+                        System.out.println("You sank the last ship. You won. Congratulations!");
+                        break;
+                    }
+                    if (shipSunk) {
+                        System.out.println("You sank a ship!");
+                    } else {
+                        System.out.println("\nYou hit a ship!");
+                    }
+                } else {
+                    System.out.println("\nYou missed!");
+                }
+                player1Turn = !player1Turn;
+                System.out.println("Press Enter and pass the move to another player\n...");
+                scanner.nextLine();
+
+
             }
+            scanner.nextLine();
             
+
         }
+
 
         scanner.close();
         
