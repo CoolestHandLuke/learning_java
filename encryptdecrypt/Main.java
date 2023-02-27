@@ -5,36 +5,45 @@ public class Main {
     
     public static void main(String[] args) {
 
-        // read a target operation, then a string, then a key
-        // Make a decision based on the inputs and print out the result
-
-        Scanner scanner = new Scanner(System.in);
-        String flag = scanner.nextLine();
+        // Now we're going to take command line arguments
+        // -mode, -key, -data. can be in any order
+        // Are guaranteed. Defaults are mode = enc, key = 0, data = ""
+        String mode = "enc";
         int key = 0;
-
-        switch(flag) {
+        String data = "";
+        
+        // Loop over the command line arguments to determine what to do
+        int i = 0;
+        while (i < args.length) {
+            switch(args[i]) {
+                case "-mode":
+                    mode = args[i + 1];
+                    i += 2;
+                    break;
+                case "-key":
+                    key = Integer.parseInt(args[i + 1]);
+                    i += 2;
+                    break;
+                case "-data":
+                    data = args[i + 1];
+                    i += 2;
+                    break;
+                default:
+                    System.out.println("Hello, World!");
+            }
+        }
+        switch(mode) {
             case "enc":
-                String messageToEncrypt = scanner.nextLine();
-                key = scanner.nextInt();
-                scanner.nextLine(); // eat the \n from the previous input
-                enc(messageToEncrypt, key);
+                enc(data, key);
                 break;
             case "dec":
-                String messageToDecrypt = scanner.nextLine();
-                key = scanner.nextInt();
-                scanner.nextLine(); // eat the \n from the previous input
-                dec(messageToDecrypt, key);
+                dec(data, key);
                 break;
             default:
                 System.out.println("Invalid input");
 
         }
-
         
-        
-        scanner.close();
-        
-
     }
 
     public static void enc(String messageToEncrypt, int key) {
